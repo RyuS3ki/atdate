@@ -1,7 +1,7 @@
 /*
  * EchoServer_conc.c
  * Aplicaciones Telematicas - Grado en Ingenieria Telematica
-*/
+ */
 
 #include <stdio.h>
 #include <stdlib.h>
