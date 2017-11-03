@@ -289,7 +289,6 @@ int main(int argc, char* const argv[]) {
     switch(opt){
       case 'h':
         host = optarg;
-        break;
 
       case 'p':
         port = atoi(optarg); // Convert input(ASCII) to int
