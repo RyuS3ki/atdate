@@ -298,13 +298,13 @@ int main(int argc, char* const argv[]) {
 
       case 'm':
         str_opt = optarg;
-        if(strcmp(str,"cu") == 0){
+        if(strcmp(str_opt,"cu") == 0){
           if(debug) printf("UDP mode\n");
           //mode = UDP_CLIENT;
-        }else if(strcmp(str,"ct") == 0){
+        }else if(strcmp(str_opt,"ct") == 0){
           if(debug) printf("TCP mode\n");
           mode = TCP_CLIENT;
-        }else if(strcmp(str,"s") == 0){
+        }else if(strcmp(str_opt,"s") == 0){
           mode = SERVER_MODE;
         }
         break;
