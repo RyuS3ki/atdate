@@ -231,21 +231,19 @@ int udp_client(char *host, int port, int debug){
   bcopy((char *)server->h_addr, (char *)&serveraddr.sin_addr.s_addr, server->h_length);
   serveraddr.sin_port = htons(port);
 
-  /* connect: create a connection with the server */
-  if (connect(clientfd, (struct sockaddr *) &serveraddr, sizeof(serveraddr)) < 0) {
-    perror("ERROR connecting");
-    exit(0);
-  }
+  /* If the method "connect" is used at this point, we could use send and recv,
+   * instead of sendto and recvfrom
+   */
 
   /* Send empty message to server */
-  n = sendto(clientfd, NULL, 0, 0, &serveraddr, sizeof(serveraddr));
+  n = sendto(clientfd, NULL, 0, 0, (struct sockaddr *) &serveraddr, sizeof(serveraddr));
   if (n < 0) {
     perror("ERROR sending empty packet");
     exit(0);
   }
 
   /* read answer from the server */
-  n = recvfrom(clientfd, &buf, BUFSIZE, 0, &serveraddr, sizeof(serveraddr));
+  n = recvfrom(clientfd, &buf, BUFSIZE, 0, (struct sockaddr *) &serveraddr, sizeof(serveraddr));
   if (n < 0) {
     perror("ERROR reading from socket");
     exit(0);
@@ -283,15 +281,15 @@ int main(int argc, char const *argv[]) {
         break;
 
       case 'p':
-        port = optarg;
+        port = atoi(optarg); // Convert input(ASCII) to int
         break;
 
       case 'm':
-        if(optarg == "cu"){
+        if(strcmp(optarg,"cu") == 0){
           mode = UDP_CLIENT;
-        }else if(optarg == "ct"){
+        }else if(strcmp(optarg,"ct") == 0){
           mode = TCP_CLIENT;
-        }else if(optarg == "s"){
+        }else if(strcmp(optarg,"s") == 0){
           mode = SERVER_MODE;
         }
         break;
