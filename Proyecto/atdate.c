@@ -242,7 +242,7 @@ int udp_client(char *host, int port, int debug){
   }
 
   /* read answer from the server */
-  n = recvfrom(clientfd, &buf, BUFSIZE, 0, (struct sockaddr *) &serveraddr, sizeof(serveraddr));
+  n = recvfrom(clientfd, &buf, sizeof(uint32_t), 0, (struct sockaddr *) &serveraddr, sizeof(serveraddr));
   if (n < 0) {
     perror("ERROR reading from socket");
     exit(0);
