@@ -28,6 +28,8 @@
  */
 #define LINUX_TIMEBASE 2208988800 // January 1st, 00.00 am 1970
 
+int mode;
+
 /* Usage function */
 void usage(){
 	fprintf(stderr, "usage: atdate [-h serverhost] [-p port] [-m cu|ct|s] [-d]\n");
@@ -276,7 +278,7 @@ int udp_client(char *host, int port, int debug){
 int main(int argc, char* const argv[]) {
   int opt;
   int debug = 0;
-  int mode; // Default mode
+   // Default mode
   char* host;
 	int port = STIME_PORT;
   char *str_opt;
