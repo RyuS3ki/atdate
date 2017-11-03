@@ -27,7 +27,7 @@
 
 /* Usage function */
 void usage(){
-	fprintf(stderr, "usage: atdate [-h serverhost] [-p port] [-m cu|ct|s] [-d]\n");
+	fprintf(stderr, "usage: atdate [-h serverhost] [-p port] [-m cu|ct|s|su] [-d]\n");
 	exit(1);
 }
 
@@ -56,7 +56,7 @@ int tcp_server(int debug){
   char *hostaddrp; // dotted decimal host addr string
   int optval; // flag value for setsockopt
 
-  printf("TIME server running in port %d\n", port);
+  printf("TCP TIME server running in port %d\n", port);
 
   /* socket: create the parent socket */
   if(debug) printf("Creating socket for petitions\n");
@@ -69,7 +69,6 @@ int tcp_server(int debug){
   /* setsockopt: lets s rerun the server immediately after we kill it.
    * Eliminates "ERROR on binding: Address already in * use" error.
    */
-  if(debug) printf("Options: accept connections in a different socket\n");
   optval = 1;
   setsockopt(new_fd, SOL_SOCKET, SO_REUSEADDR,(const void *)&optval , sizeof(int));
 
@@ -97,7 +96,7 @@ int tcp_server(int debug){
   /* wait for a connection request */
 	while(1) {  // main accept() loop
     clientlen = sizeof(clientaddr);
-    if(debug) printf("Accepting new connection\n");
+    if(debug) printf("Listening for new connections...\n");
 		new_fd = accept(sockfd, (struct sockaddr *)&clientaddr, &clientlen);
 		if (new_fd == -1) {
 			perror("ERROR on accept");
@@ -148,6 +147,104 @@ int tcp_server(int debug){
 			exit(0);
 		}
 		close(new_fd);  // parent doesn't need this
+	}
+	return 0;
+}
+
+/* UDP Server function */
+int udp_server(int debug){
+  signal(SIGCHLD, sigchld_handler);
+
+  int sockfd, new_fd;  // listen on sockfd
+	int port = SERV_PORT;
+  socklen_t clientlen; // byte size of client's address
+  struct sockaddr_in serveraddr; // server's addr
+  struct sockaddr_in clientaddr; // client addr
+  struct hostent *hostp; // client host info
+  char *hostaddrp; // dotted decimal host addr string
+  int optval; // flag value for setsockopt
+
+  printf("UDP TIME server running in port %d\n", port);
+
+  /* socket: create the parent socket */
+  if(debug) printf("Creating socket for petitions\n");
+  sockfd = socket(AF_INET, SOCK_STREAM, 0);
+  if (sockfd < 0) {
+    perror("ERROR opening socket");
+		exit(0);
+	}
+
+  /* setsockopt: lets s rerun the server immediately after we kill it.
+   * Eliminates "ERROR on binding: Address already in * use" error.
+   */
+  optval = 1;
+  setsockopt(new_fd, SOL_SOCKET, SO_REUSEADDR,(const void *)&optval , sizeof(int));
+
+
+  /* build the server's Internet address */
+  if(debug) printf("Creating address\n");
+  bzero((char *) &serveraddr, sizeof(serveraddr));
+  serveraddr.sin_family = AF_INET; // IPv4
+  serveraddr.sin_addr.s_addr = htonl(INADDR_ANY);
+  serveraddr.sin_port = htons((unsigned short)port);
+
+  /* bind: associate the parent socket with a port */
+  if(debug) printf("Bind: Specify local address (with port)\n");
+  if (bind(sockfd, (struct sockaddr *) &serveraddr, sizeof(serveraddr)) < 0) {
+    perror("ERROR on binding");
+		exit(0);
+	}
+
+  /* listen: make this socket ready to accept connection requests */
+  if(debug) printf("Listen: Ready to get connections\n");
+  if (listen(sockfd, BACKLOG) < 0) {
+		perror("ERROR on listen");
+		exit(0);
+	}
+
+  /* wait for a connection request */
+	while(1) {  // main accept() loop
+    clientlen = sizeof(clientaddr);
+    if(debug) printf("Listening for new connections...\n");
+
+    if(debug) printf("New child process generated\n");
+    uint32_t time_send; // 32 bit long int
+    int n;
+    time_t own_time;
+
+    if(debug) printf("Getting system time\n");
+    own_time = time(NULL); // Getting the server's time
+    if(debug) printf("Adjusting time to NTP timebase\n");
+    uint32_t time_send = htonl(own_time + LINUX_TIMEBASE); // Adjusted
+
+    /* Receiving empty datagram */
+    char received[10];
+    n = recvfrom(sockfd, received, sizeof(received), 0, &clientaddr, clientlen);
+    if( n < 0 ){
+      perror("ERROR receiving");
+      exit(0);
+    }else if (n == 0){
+      if(!fork()){
+        /* Sending time */
+        if(debug) printf("Sending...\n");
+        n = sendto(new_fd, &time_send, sizeof(uint32_t), 0, &clientaddr, clientlen);
+        if(n < 0){
+          fprintf(stderr, "ERROR sending\n");
+        }else{
+          printf("Date & time correctly sent\n");
+        }
+      }
+      if(debug) printf("Closing connection with client\n");
+      close(sockfd); // child doesn't need the listener
+			close(new_fd);
+			exit(0);
+    }else{
+      if(debug) printf("Wrong type of datagram received, discarding...\n");
+    }
+
+    // Closed connection
+    if(debug) printf("Closing server socket\n");
+    close(sockfd);
 	}
 	return 0;
 }
@@ -269,11 +366,11 @@ int udp_client(char *host, int port, int debug){
     exit(0);
   }
 
-  if(debug) printf("Sending empty packet\n");
+  if(debug) printf("Sending empty datagram\n");
   /* Send empty message to server */
   n = send(clientfd, NULL, 0, 0);
   if (n < 0) {
-    perror("ERROR sending empty packet");
+    perror("ERROR sending empty datagram");
     exit(0);
   }
   if(debug) printf("Sent!\n");
@@ -354,8 +451,11 @@ int main(int argc, char* const argv[]) {
     if(debug) printf("Executing TCP Client\n");
     tcp_client(host, port, debug);
   }else if(strcmp(mode,"s") == 0){
-    if(debug) printf("Executing Server\n");
+    if(debug) printf("Executing TCP Server\n");
     tcp_server(debug);
+  }else if(strcmp(mode,"su") == 0){
+    if(debug) printf("Executing UDP Server\n");
+    udp_server(debug);
   }else if(host == NULL){
     printf("To execute Client Mode you must specify at least the option '-h'\n");
     usage();
