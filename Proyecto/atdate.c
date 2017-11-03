@@ -142,6 +142,7 @@ int tcp_server(int debug){
 /* TCP Client function */
 int tcp_client(char *host, int port, int debug){
 
+  int clientfd;
   struct hostent *server;
 	struct sockaddr_in serveraddr;
   char buf[BUFSIZE];
@@ -186,7 +187,7 @@ int tcp_client(char *host, int port, int debug){
     struct tm *final_date; // Struct tm with rcvd time
     char *final_date_s; // Buffer to store formatted string
     time_t t_rcvd = ntohl(buf) + LINUX_TIMEBASE; // Adjust to linux
-    final_date = localtime(t_rcvd);
+    final_date = localtime(&t_rcvd);
     strftime(final_date_s, 80, "%c", final_date);
 
     /* print the server's reply */
@@ -202,6 +203,7 @@ int tcp_client(char *host, int port, int debug){
 /* UDP Client function */
 int udp_client(char *host, int port, int debug){
 
+  int clientfd;
   struct hostent *server;
 	struct sockaddr_in serveraddr;
   char buf[BUFSIZE];
@@ -236,14 +238,14 @@ int udp_client(char *host, int port, int debug){
   }
 
   /* Send empty message to server */
-  n = sendto(clientfd, NULL, 0, 0);
+  n = sendto(clientfd, NULL, 0, 0, serveraddr, sizeof(sockaddr_in));
   if (n < 0) {
     perror("ERROR sending empty packet");
     exit(0);
   }
 
   /* read answer from the server */
-  n = recvfrom(clientfd, &buf, BUFSIZE, 0);
+  n = recvfrom(clientfd, &buf, BUFSIZE, 0, serveraddr, sizeof(sockaddr_in));
   if (n < 0) {
     perror("ERROR reading from socket");
     exit(0);
@@ -253,7 +255,7 @@ int udp_client(char *host, int port, int debug){
     struct tm *final_date; // Struct tm with rcvd time
     char *final_date_s; // Buffer to store formatted string
     time_t t_rcvd = ntohl(buf) + LINUX_TIMEBASE; // Adjust to linux
-    final_date = localtime(t_rcvd);
+    final_date = localtime(&t_rcvd);
     strftime(final_date_s, 80, "%c", final_date);
 
     /* print the server's reply */
