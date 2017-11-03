@@ -143,6 +143,7 @@ int tcp_server(int debug){
 /* TCP Client function */
 int tcp_client(char *host, int port, int debug){
 
+  printf("Starting TCP\n");
   int clientfd;
   struct hostent *server;
 	struct sockaddr_in serveraddr;
@@ -152,6 +153,7 @@ int tcp_client(char *host, int port, int debug){
   signal(SIGINT, ctrlc_handler);
 
   /* socket: IPv4, STREAM + default protocol = TCP */
+  if(debug) printf("Creating socket\n");
   clientfd = socket(AF_INET, SOCK_STREAM, 0);
   if (clientfd < 0) {
     perror("ERROR opening socket");
@@ -159,6 +161,7 @@ int tcp_client(char *host, int port, int debug){
   }
 
   /* gethostbyname: get the server's DNS entry */
+  if(debug) printf("Getting server address\n");
   server = gethostbyname(host);
   if (server == NULL) {
     fprintf(stderr,"ERROR, no such host: %s\n", host);
@@ -166,23 +169,27 @@ int tcp_client(char *host, int port, int debug){
   }
 
   /* build the server's Internet address */
+  if(debug) printf("Storing server address\n");
   bzero((char *) &serveraddr, sizeof(serveraddr));
   serveraddr.sin_family = AF_INET;
   bcopy((char *)server->h_addr, (char *)&serveraddr.sin_addr.s_addr, server->h_length);
   serveraddr.sin_port = htons(port);
 
   /* connect: create a connection with the server */
+  if (debug) printf("Creating connection\n");
   if (connect(clientfd, (struct sockaddr *) &serveraddr, sizeof(serveraddr)) < 0) {
     perror("ERROR connecting");
     exit(0);
   }
 
+  if(debug) printf("Waiting for server's answer\n");
 	/* read answer from the server */
   n = recv(clientfd, &buf, BUFSIZE, 0);
   if (n < 0) {
     perror("ERROR receiving");
     exit(0);
   }else{
+    if(debug) printf("Data received\n");
     struct tm *final_date; // Struct tm with rcvd time
     char *final_date_s; // Buffer to store formatted string
     time_t t_rcvd = ntohl(buf) + LINUX_TIMEBASE; // Adjust to linux
@@ -194,6 +201,7 @@ int tcp_client(char *host, int port, int debug){
   }
 
   /* Close socket: ended connection */
+  if(debug) printf("Closing client\n");
   close(clientfd);
 	return(0);
 
