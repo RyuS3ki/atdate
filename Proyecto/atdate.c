@@ -293,7 +293,7 @@ int main(int argc, char* const argv[]) {
 
       case 'p':
         port = atoi(optarg); // Convert input(ASCII) to int
-        if(debug) printf("Port selected is: %d\n", port);
+        printf("Port selected is: %d\n", port);
         break;
 
       case 'm':
@@ -324,6 +324,7 @@ int main(int argc, char* const argv[]) {
   }else{
     printf("Host server is: %s\n", host);
     printf("Port is: %d\n", port);
+    printf("Mode type is: %d\n", mode);
   }
 
   if (mode == UDP_CLIENT) {
