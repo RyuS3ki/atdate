@@ -195,13 +195,6 @@ int udp_server(int debug){
 		exit(0);
 	}
 
-  /* listen: make this socket ready to accept connection requests */
-  if(debug) printf("Listen: Ready to get connections\n");
-  if (listen(sockfd, BACKLOG) < 0) {
-		perror("ERROR on listen");
-		exit(0);
-	}
-
   /* wait for a connection request */
 	while(1) {  // main accept() loop
     clientlen = sizeof(clientaddr);
