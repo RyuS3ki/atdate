@@ -227,7 +227,7 @@ int udp_server(int debug){
       if(!fork()){
         /* Sending time */
         if(debug) printf("Sending...\n");
-        n = sendto(new_fd, &time_send, sizeof(uint32_t), 0, (struct sockaddr *)&clientaddr, &clientlen);
+        n = sendto(new_fd, &time_send, sizeof(uint32_t), 0, (struct sockaddr *)&clientaddr, clientlen);
         if(n < 0){
           fprintf(stderr, "ERROR sending\n");
         }else{
