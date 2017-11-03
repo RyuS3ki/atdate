@@ -168,7 +168,7 @@ int udp_server(int debug){
 
   /* socket: create the parent socket */
   if(debug) printf("Creating socket for petitions\n");
-  sockfd = socket(AF_INET, SOCK_STREAM, 0);
+  sockfd = socket(AF_INET, SOCK_DGRAM, 0);
   if (sockfd < 0) {
     perror("ERROR opening socket");
 		exit(0);
