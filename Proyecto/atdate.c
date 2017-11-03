@@ -280,9 +280,6 @@ int main(int argc, char* const argv[]) {
     switch(opt){
       case 'h':
         host = optarg;
-        if (debug) {
-          printf("Host server is: %s\n", host);
-        }
         break;
 
       case 'p':
@@ -307,9 +304,12 @@ int main(int argc, char* const argv[]) {
         usage();
     }
   }
+
   if(mode =! 2 && host == NULL){
     printf("To execute Client Mode you must specify at least the option '-h'\n");
     usage();
+  }else{
+    printf("Host server is: %s\n", host);
   }
 
   if (mode == UDP_CLIENT) {
