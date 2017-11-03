@@ -296,7 +296,8 @@ int main(int argc, char* const argv[]) {
         break;
 
       case 'm':
-        char *str = optarg;
+        char *str;
+        str = optarg;
         if(strcmp(str,"cu") == 0){
           if(debug) printf("UDP mode\n");
           //mode = UDP_CLIENT;
