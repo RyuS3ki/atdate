@@ -296,7 +296,7 @@ int main(int argc, char* const argv[]) {
   int debug = 0;
   char* mode; // Default mode
   char* host;
-	int port = STIME_PORT;
+	int port = 37;
   char *str_opt;
 
   /* Parsing command-line arguments
