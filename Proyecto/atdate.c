@@ -265,7 +265,7 @@ int udp_client(char *host, int port, int debug){
 
   if(debug) printf("Waiting for server's answer\n");
   /* read answer from the server */
-  n = recv(clientfd, (void *) &buf, sizeof(uint32_t), 0);
+  n = recv(clientfd, &buf, sizeof(buf), 0);
   if (n < 0) {
     perror("ERROR reading from socket");
     exit(0);
