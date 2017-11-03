@@ -33,7 +33,7 @@ void usage(){
 
 /* Signal handler for Ctrl-C */
 void ctrlc_handler(int sig){
-  printf("Ctrl-C captured, exiting...\n");
+  printf("\nCtrl-C captured, exiting...\n");
   printf("See you soon!\n");
   exit(0);
 }
@@ -258,7 +258,7 @@ int udp_client(char *host, int port, int debug){
 
   if(debug) printf("Waiting for server's answer\n");
   /* read answer from the server */
-  n = recvfrom(clientfd, &buf, sizeof(uint32_t), 0, (struct sockaddr *) &serveraddr, (socklen_t *) sizeof(serveraddr));
+  n = recvfrom(clientfd, (void *) &buf, sizeof(uint32_t), 0, (struct sockaddr *) &serveraddr, (socklen_t *) sizeof(serveraddr));
   if (n < 0) {
     perror("ERROR reading from socket");
     exit(0);
