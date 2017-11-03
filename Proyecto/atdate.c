@@ -285,7 +285,7 @@ int main(int argc, char* const argv[]) {
    * Examples used from:
    * https://www.gnu.org/software/libc/manual/html_node/Example-of-Getopt.html#Example-of-Getopt
    */
-  while((opt = getopt(argc, argv, "h:p:m:d?")) != -1){
+  while((opt = getopt(argc, argv, "dh:p:m:")) != -1){
     switch(opt){
       case 'h':
         host = optarg;
