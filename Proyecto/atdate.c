@@ -128,7 +128,7 @@ int tcp_server(int debug){
         if(debug) printf("Getting system time\n");
         own_time = time(NULL); // Getting the server's time
         if(debug) printf("Adjusting time to NTP timebase\n");
-        uint32_t time_send = htonl(own_time + LINUX_TIMEBASE); // Adjusted
+        time_send = htonl(own_time + LINUX_TIMEBASE); // Adjusted
         /* Sending time */
         if(debug) printf("Sending...\n");
         n = send(new_fd, &time_send, sizeof(uint32_t), 0);
@@ -215,11 +215,11 @@ int udp_server(int debug){
     if(debug) printf("Getting system time\n");
     own_time = time(NULL); // Getting the server's time
     if(debug) printf("Adjusting time to NTP timebase\n");
-    uint32_t time_send = htonl(own_time + LINUX_TIMEBASE); // Adjusted
+    time_send = htonl(own_time + LINUX_TIMEBASE); // Adjusted
 
     /* Receiving empty datagram */
     char received[10];
-    n = recvfrom(sockfd, received, sizeof(received), 0, &clientaddr, clientlen);
+    n = recvfrom(sockfd, received, sizeof(received), 0, (struct sockaddr *)&clientaddr, &clientlen);
     if( n < 0 ){
       perror("ERROR receiving");
       exit(0);
@@ -227,7 +227,7 @@ int udp_server(int debug){
       if(!fork()){
         /* Sending time */
         if(debug) printf("Sending...\n");
-        n = sendto(new_fd, &time_send, sizeof(uint32_t), 0, &clientaddr, clientlen);
+        n = sendto(new_fd, &time_send, sizeof(uint32_t), 0, (struct sockaddr *)&clientaddr, &clientlen);
         if(n < 0){
           fprintf(stderr, "ERROR sending\n");
         }else{
