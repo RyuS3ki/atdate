@@ -280,6 +280,9 @@ int main(int argc, char* const argv[]) {
     switch(opt){
       case 'h':
         host = optarg;
+        if (debug) {
+          printf("Host server is: %s\n", host);
+        }
         break;
 
       case 'p':
