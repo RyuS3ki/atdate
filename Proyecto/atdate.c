@@ -119,7 +119,8 @@ int tcp_server(int debug){
 
       do{
         own_time = time(NULL); // Getting the server's time
-        time_send = htonl(own_time - LINUX_TIMEBASE); // Adjusted
+        uint32_t time_send = htonl(own_time - LINUX_TIMEBASE); // Adjusted
+        /* Sending time */
         n = send(new_fd, &time_send, sizeof(uint32_t), 0);
         if(n<0){
           fprintf(stderr, "ERROR sending\n");
@@ -273,7 +274,10 @@ int main(int argc, char* const argv[]) {
   char* host;
 	int port = STIME_PORT;
 
-  /* Parsing command-line arguments */
+  /* Parsing command-line arguments
+   * Examples used from:
+   * https://www.gnu.org/software/libc/manual/html_node/Example-of-Getopt.html#Example-of-Getopt
+   */
   while(opt = getopt(argc, argv, "h:p:m:d") != -1){
     switch(opt){
       case 'h':
