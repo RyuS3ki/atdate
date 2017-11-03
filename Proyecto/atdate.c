@@ -56,7 +56,10 @@ int tcp_server(int debug){
   char *hostaddrp; // dotted decimal host addr string
   int optval; // flag value for setsockopt
 
+  printf("TIME server running in port %d\n", port);
+
   /* socket: create the parent socket */
+  if(debug) printf("Creating socket for petitions\n");
   sockfd = socket(AF_INET, SOCK_STREAM, 0);
   if (sockfd < 0) {
     perror("ERROR opening socket");
@@ -66,22 +69,26 @@ int tcp_server(int debug){
   /* setsockopt: lets s rerun the server immediately after we kill it.
    * Eliminates "ERROR on binding: Address already in * use" error.
    */
+  if(debug) printf("Options: accept connections in a different socket\n");
   optval = 1;
   setsockopt(new_fd, SOL_SOCKET, SO_REUSEADDR,(const void *)&optval , sizeof(int));
 
   /* build the server's Internet address */
+  if(debug) printf("Creating address\n");
   bzero((char *) &serveraddr, sizeof(serveraddr));
   serveraddr.sin_family = AF_INET; // IPv4
   serveraddr.sin_addr.s_addr = htonl(INADDR_ANY);
   serveraddr.sin_port = htons((unsigned short)port);
 
   /* bind: associate the parent socket with a port */
+  if(debug) printf("Bind: Specify local address (with port)\n");
   if (bind(sockfd, (struct sockaddr *) &serveraddr, sizeof(serveraddr)) < 0) {
     perror("ERROR on binding");
 		exit(0);
 	}
 
   /* listen: make this socket ready to accept connection requests */
+  if(debug) printf("Listen: Ready to get connections\n");
   if (listen(sockfd, BACKLOG) < 0) {
 		perror("ERROR on listen");
 		exit(0);
@@ -90,13 +97,16 @@ int tcp_server(int debug){
   /* wait for a connection request */
 	while(1) {  // main accept() loop
     clientlen = sizeof(clientaddr);
+    if(debug) printf("Accepting new connection\n");
 		new_fd = accept(sockfd, (struct sockaddr *)&clientaddr, &clientlen);
 		if (new_fd == -1) {
 			perror("ERROR on accept");
 			exit(0);
 		}
+    if(debug) printf("New connection accepted\n");
 
 		/* gethostbyaddr: determine who sent the message */
+    if(debug) printf("getting client's address\n");
     hostp = gethostbyaddr((const char *)&clientaddr.sin_addr.s_addr, sizeof(clientaddr.sin_addr.s_addr), AF_INET);
     if (hostp == NULL) {
       perror("ERROR on gethostbyaddr");
@@ -110,14 +120,18 @@ int tcp_server(int debug){
     //printf("server got connection from %s (%s)\n", hostp->h_name, hostaddrp);
 
     if(!fork()){ // this is the child process: fork() == 0
+      if(debug) printf("New child process generated\n");
       uint32_t time_send; // 32 bit long int
       int n;
       time_t own_time;
 
       do{
+        if(debug) printf("Getting system time\n");
         own_time = time(NULL); // Getting the server's time
+        if(debug) printf("Adjusting time to NTP timebase\n");
         uint32_t time_send = htonl(own_time + LINUX_TIMEBASE); // Adjusted
         /* Sending time */
+        if(debug) printf("Sending...\n");
         n = send(new_fd, &time_send, sizeof(uint32_t), 0);
         if(n<0){
           fprintf(stderr, "ERROR sending\n");
@@ -128,6 +142,7 @@ int tcp_server(int debug){
       }while(n>0); // If n<0 -> Client closed connection
 
       // Closed connection
+      if(debug) printf("Closing connection with client\n");
       close(sockfd); // child doesn't need the listener
 			close(new_fd);
 			exit(0);
@@ -295,7 +310,7 @@ int main(int argc, char* const argv[]) {
   int opt;
   int debug = 0;
   char* mode = NULL;
-  char* host;
+  char* host = NULL;
 	int port = 37;
   char *str_opt;
 
@@ -327,12 +342,11 @@ int main(int argc, char* const argv[]) {
     }
   }
 
-  if(mode == NULL){
+  if(mode == NULL){ // Default mode
     mode = "cu";
   }
-  //(mode == NULL) || 
 
-  if(((strcmp(mode,"cu") == 0)) && host != NULL){
+  if((strcmp(mode,"cu") == 0) && host != NULL){
     if(debug) printf("Executing UDP Client\n");
     udp_client(host, port, debug);
   }else if(host == NULL){
