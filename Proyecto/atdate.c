@@ -180,7 +180,8 @@ int tcp_client(char *host, int port, int debug){
 	/* read answer from the server */
   n = recv(clientfd, &buf, BUFSIZE, 0);
   if (n < 0) {
-    perror("ERROR reading from socket");
+    perror("
+    ");
     exit(0);
   }else{
     struct tm *final_date; // Struct tm with rcvd time
@@ -211,6 +212,7 @@ int udp_client(char *host, int port, int debug){
   signal(SIGINT, ctrlc_handler);
 
   /* socket: IPv4, DGRAM + default protocol = UDP */
+  if(debug) printf("Creating socket\n");
   clientfd = socket(AF_INET, SOCK_DGRAM, 0);
   if (clientfd < 0) {
     perror("ERROR opening socket");
@@ -218,12 +220,14 @@ int udp_client(char *host, int port, int debug){
   }
 
   /* gethostbyname: get the server's DNS entry */
+  if(debug) printf("Getting server address\n");
   server = gethostbyname(host);
   if (server == NULL) {
     fprintf(stderr,"ERROR, no such host: %s\n", host);
     exit(0);
   }
 
+  if(debug) printf("Storing server address\n");
   /* build the server's Internet address */
   bzero((char *) &serveraddr, sizeof(serveraddr));
   serveraddr.sin_family = AF_INET;
@@ -234,19 +238,23 @@ int udp_client(char *host, int port, int debug){
    * instead of sendto and recvfrom
    */
 
+  if(debug) printf("Sending empty packet\n");
   /* Send empty message to server */
   n = sendto(clientfd, NULL, 0, 0, (struct sockaddr *) &serveraddr, (socklen_t) sizeof(serveraddr));
   if (n < 0) {
     perror("ERROR sending empty packet");
     exit(0);
   }
+  if(debug) printf("Sent!\n");
 
+  if(debug) printf("Waiting for server's answer\n");
   /* read answer from the server */
   n = recvfrom(clientfd, &buf, sizeof(uint32_t), 0, (struct sockaddr *) &serveraddr, (socklen_t *) sizeof(serveraddr));
   if (n < 0) {
     perror("ERROR reading from socket");
     exit(0);
   }
+  if(debug) printf("Data received\n");
 
   if(n>0){ // Data received from server
     struct tm *final_date; // Struct tm with rcvd time
@@ -259,6 +267,7 @@ int udp_client(char *host, int port, int debug){
     printf("%s\n", final_date_s);
   }
 
+  if(debug) printf("Closing client\n");
   /* Close socket: ended connection */
   close(clientfd);
 	return(0);
@@ -313,10 +322,13 @@ int main(int argc, char* const argv[]) {
   }
 
   if (mode == UDP_CLIENT) {
+    if(debug) printf("Executing UDP Client\n");
     udp_client(host, port, debug);
   }else if(mode == TCP_CLIENT){
+    if(debug) printf("Executing TCP Client\n");
     tcp_client(host, port, debug);
   }else{
+    if(debug) printf("Executing Server\n");
     tcp_server(debug);
   }
 
