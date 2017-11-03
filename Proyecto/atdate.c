@@ -243,13 +243,20 @@ int udp_client(char *host, int port, int debug){
   bcopy((char *)server->h_addr, (char *)&serveraddr.sin_addr.s_addr, server->h_length);
   serveraddr.sin_port = htons(port);
 
-  /* If the method "connect" is used at this point, we could use send and recv,
-   * instead of sendto and recvfrom
+  /* If the method "connect" is not used at this point, we'll use sendto and
+   * recvfrom, instead of send and recv
    */
+
+  /* connect: create a connection with the server */
+  if (debug) printf("Creating connection\n");
+  if (connect(clientfd, (struct sockaddr *) &serveraddr, sizeof(serveraddr)) < 0) {
+    perror("ERROR connecting");
+    exit(0);
+  }
 
   if(debug) printf("Sending empty packet\n");
   /* Send empty message to server */
-  n = sendto(clientfd, NULL, 0, 0, (struct sockaddr *) &serveraddr, (socklen_t) sizeof(serveraddr));
+  n = send(clientfd, NULL, 0, 0);
   if (n < 0) {
     perror("ERROR sending empty packet");
     exit(0);
@@ -258,7 +265,7 @@ int udp_client(char *host, int port, int debug){
 
   if(debug) printf("Waiting for server's answer\n");
   /* read answer from the server */
-  n = recvfrom(clientfd, (void *) &buf, sizeof(uint32_t), 0, (struct sockaddr *) &serveraddr, (socklen_t *) sizeof(serveraddr));
+  n = recv(clientfd, (void *) &buf, sizeof(uint32_t), 0);
   if (n < 0) {
     perror("ERROR reading from socket");
     exit(0);
