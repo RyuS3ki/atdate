@@ -190,11 +190,13 @@ int tcp_client(char *host, int port, int debug){
     exit(0);
   }else{
     if(debug) printf("Data received\n");
-    struct tm *final_date; // Struct tm with rcvd time
-    char *final_date_s; // Buffer to store formatted string
     time_t t_rcvd = ntohl(buf) + LINUX_TIMEBASE; // Adjust to linux
+    if(debug) printf("Adjusting time to linux timebase\n");
+    struct tm *final_date; // Struct tm with rcvd time
     final_date = localtime(&t_rcvd);
-    strftime(final_date_s, 80, "%c", final_date);
+    if(debug) printf("Formatting date\n");
+    char *final_date_s; // Buffer to store formatted string
+    strftime(final_date_s, 160, "%c", final_date);
 
     /* print the server's reply */
     printf("%s\n", final_date_s);
