@@ -276,7 +276,8 @@ int udp_client(char *host, int port, int debug){
 int main(int argc, char* const argv[]) {
   int opt;
   int debug = 0;
-  int mode = UDP_CLIENT; // Default mode
+  int mode;
+  //int mode = UDP_CLIENT; // Default mode
   char* host;
 	int port = STIME_PORT;
 
