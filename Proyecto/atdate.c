@@ -12,9 +12,9 @@
 #include <signal.h>
 #include <time.h>
 
-#define UDP_CLIENT 0
-#define TCP_CLIENT 1
-#define SERVER_MODE 2
+#define UDP_CLIENT 1
+#define TCP_CLIENT 2
+#define SERVER_MODE 3
 #define BACKLOG 10	 // Max pending connections in queue
 #define BUFSIZE 32  // Buffer size (TIME payload size)
 #define STIME_PORT 37 // Default port for TIME protocol servers
