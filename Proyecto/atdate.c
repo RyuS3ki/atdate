@@ -119,7 +119,7 @@ int tcp_server(int debug){
 
       do{
         own_time = time(NULL); // Getting the server's time
-        uint32_t time_send = htonl(own_time - LINUX_TIMEBASE); // Adjusted
+        uint32_t time_send = htonl(own_time + LINUX_TIMEBASE); // Adjusted
         /* Sending time */
         n = send(new_fd, &time_send, sizeof(uint32_t), 0);
         if(n<0){
@@ -190,7 +190,7 @@ int tcp_client(char *host, int port, int debug){
     exit(0);
   }else{
     if(debug) printf("Data received\n");
-    time_t t_rcvd = ntohl(buf) + LINUX_TIMEBASE; // Adjust to linux
+    time_t t_rcvd = ntohl(buf) - LINUX_TIMEBASE; // Adjust to linux
     if(debug) printf("Adjusting time to linux timebase\n");
     struct tm *final_date; // Struct tm with rcvd time
     //final_date = localtime(&t_rcvd);
@@ -263,17 +263,18 @@ int udp_client(char *host, int port, int debug){
   if (n < 0) {
     perror("ERROR reading from socket");
     exit(0);
-  }
-  if(debug) printf("Data received\n");
-
-  if(n>0){ // Data received from server
+  }else{
+    if(debug) printf("Data received\n");
+    time_t t_rcvd = ntohl(buf) - LINUX_TIMEBASE; // Adjust to linux
+    if(debug) printf("Adjusting time to linux timebase\n");
     struct tm *final_date; // Struct tm with rcvd time
-    char *final_date_s; // Buffer to store formatted string
-    time_t t_rcvd = ntohl(buf) + LINUX_TIMEBASE; // Adjust to linux
-    final_date = localtime(&t_rcvd);
-    strftime(final_date_s, 80, "%c", final_date);
+    //final_date = localtime(&t_rcvd);
+    if(debug) printf("Formatting date\n");
+    char final_date_s[80]; // Buffer to store formatted string
+    strftime(final_date_s, 80, "%c", localtime(&t_rcvd));
 
     /* print the server's reply */
+    if(debug) printf("Printing date\n");
     printf("%s\n", final_date_s);
   }
 
