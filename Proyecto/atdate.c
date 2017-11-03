@@ -196,9 +196,10 @@ int tcp_client(char *host, int port, int debug){
     final_date = localtime(&t_rcvd);
     if(debug) printf("Formatting date\n");
     char *final_date_s; // Buffer to store formatted string
-    strftime(final_date_s, 160, "%c", final_date);
+    strftime(final_date_s, 60, "%c", final_date);
 
     /* print the server's reply */
+    if(debug) printf("Printing date\n");
     printf("%s\n", final_date_s);
   }
 
