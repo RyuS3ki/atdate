@@ -146,7 +146,7 @@ int tcp_client(char *host, int port, int debug){
   int clientfd;
   struct hostent *server;
 	struct sockaddr_in serveraddr;
-  char buf[BUFSIZE];
+  uint32_t buf; // Variable to store the information received
   int n;
 
   signal(SIGINT, ctrlc_handler);
@@ -182,9 +182,7 @@ int tcp_client(char *host, int port, int debug){
   if (n < 0) {
     perror("ERROR reading from socket");
     exit(0);
-  }
-
-  if(n>0){ // Data received from server
+  }else{
     struct tm *final_date; // Struct tm with rcvd time
     char *final_date_s; // Buffer to store formatted string
     time_t t_rcvd = ntohl(buf) + LINUX_TIMEBASE; // Adjust to linux
@@ -207,7 +205,7 @@ int udp_client(char *host, int port, int debug){
   int clientfd;
   struct hostent *server;
 	struct sockaddr_in serveraddr;
-  char buf[BUFSIZE];
+  uint32_t buf; // Variable to store the information received
   int n;
 
   signal(SIGINT, ctrlc_handler);
