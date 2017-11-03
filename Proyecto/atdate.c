@@ -289,6 +289,7 @@ int main(int argc, char* const argv[]) {
     switch(opt){
       case 'h':
         host = optarg;
+        break;
 
       case 'p':
         port = atoi(optarg); // Convert input(ASCII) to int
@@ -298,10 +299,10 @@ int main(int argc, char* const argv[]) {
       case 'm':
         str_opt = optarg;
         if(strcmp(str_opt,"cu") == 0){
-          if(debug) printf("UDP mode\n");
+          printf("UDP mode\n");
           mode = UDP_CLIENT;
         }else if(strcmp(str_opt,"ct") == 0){
-          if(debug) printf("TCP mode\n");
+          printf("TCP mode\n");
           mode = TCP_CLIENT;
         }else if(strcmp(str_opt,"s") == 0){
           mode = SERVER_MODE;
