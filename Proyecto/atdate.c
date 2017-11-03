@@ -26,7 +26,7 @@
  * We need to substract this quantity to the host Time
  * so that it is adjusted to the RFC
  */
-#define LINUX_TIMEBASE 2208988800; // January 1st, 00.00 am 1970
+#define LINUX_TIMEBASE 2208988800 // January 1st, 00.00 am 1970
 
 /* Usage function */
 void usage(){
@@ -120,9 +120,9 @@ int tcp_server(int debug){
       do{
         own_time = time(NULL); // Getting the server's time
         time_send = htonl(own_time - LINUX_TIMEBASE); // Adjusted
-        n = send(fd, time_send, sizeof(uint32_t), 0);
+        n = send(new_fd, &time_send, sizeof(uint32_t), 0);
         if(n<0){
-          fprintf(stderr, "ERROR sending\n", );
+          fprintf(stderr, "ERROR sending\n");
         }else{
           printf("Date & time correctly sent\n");
         }
@@ -144,8 +144,6 @@ int tcp_client(char *host, int port, int debug){
 
   struct hostent *server;
 	struct sockaddr_in serveraddr;
-	char* host;
-	int port;
   char buf[BUFSIZE];
   int n;
 
