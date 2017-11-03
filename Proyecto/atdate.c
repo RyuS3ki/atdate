@@ -280,6 +280,7 @@ int main(int argc, char* const argv[]) {
   //int mode = UDP_CLIENT; // Default mode
   char* host;
 	int port = STIME_PORT;
+  char *str_opt;
 
   /* Parsing command-line arguments
    * Examples used from:
@@ -296,8 +297,7 @@ int main(int argc, char* const argv[]) {
         break;
 
       case 'm':
-        char *str_opt;
-        str = optarg;
+        str_opt = optarg;
         if(strcmp(str,"cu") == 0){
           if(debug) printf("UDP mode\n");
           //mode = UDP_CLIENT;
