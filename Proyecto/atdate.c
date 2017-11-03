@@ -327,7 +327,12 @@ int main(int argc, char* const argv[]) {
     }
   }
 
-  if(((mode == NULL) || (strcmp(mode,"cu") == 0)) && host != NULL){
+  if(mode == NULL){
+    mode = "cu";
+  }
+  //(mode == NULL) || 
+
+  if(((strcmp(mode,"cu") == 0)) && host != NULL){
     if(debug) printf("Executing UDP Client\n");
     udp_client(host, port, debug);
   }else if(host == NULL){
