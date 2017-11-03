@@ -350,22 +350,15 @@ int main(int argc, char* const argv[]) {
   if((strcmp(mode,"cu") == 0) && host != NULL){
     if(debug) printf("Executing UDP Client\n");
     udp_client(host, port, debug);
-  }else if(host == NULL){
-    printf("To execute Client Mode you must specify at least the option '-h'\n");
-    usage();
-  }
-
-  if((strcmp(mode,"ct") == 0) && host != NULL){
+  }else if((strcmp(mode,"ct") == 0) && host != NULL){
     if(debug) printf("Executing TCP Client\n");
     tcp_client(host, port, debug);
+  }else if(strcmp(mode,"s") == 0){
+    if(debug) printf("Executing Server\n");
+    tcp_server(debug);
   }else if(host == NULL){
     printf("To execute Client Mode you must specify at least the option '-h'\n");
     usage();
-  }
-
-  if(strcmp(mode,"s") == 0){
-    if(debug) printf("Executing Server\n");
-    tcp_server(debug);
   }
 
   return 0;
