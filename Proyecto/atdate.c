@@ -180,8 +180,7 @@ int tcp_client(char *host, int port, int debug){
 	/* read answer from the server */
   n = recv(clientfd, &buf, BUFSIZE, 0);
   if (n < 0) {
-    perror("
-    ");
+    perror("ERROR receiving");
     exit(0);
   }else{
     struct tm *final_date; // Struct tm with rcvd time
