@@ -238,14 +238,14 @@ int udp_client(char *host, int port, int debug){
   }
 
   /* Send empty message to server */
-  n = sendto(clientfd, NULL, 0, 0, serveraddr, sizeof(sockaddr_in));
+  n = sendto(clientfd, NULL, 0, 0, &serveraddr, sizeof(serveraddr));
   if (n < 0) {
     perror("ERROR sending empty packet");
     exit(0);
   }
 
   /* read answer from the server */
-  n = recvfrom(clientfd, &buf, BUFSIZE, 0, serveraddr, sizeof(sockaddr_in));
+  n = recvfrom(clientfd, &buf, BUFSIZE, 0, &serveraddr, sizeof(serveraddr));
   if (n < 0) {
     perror("ERROR reading from socket");
     exit(0);
