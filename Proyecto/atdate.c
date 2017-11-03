@@ -343,6 +343,7 @@ int main(int argc, char* const argv[]) {
   }
 
   if(mode == NULL){ // Default mode
+    if(debug) printf("No mode specified. Setting default mode\n");
     mode = "cu";
   }
 
