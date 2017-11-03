@@ -297,8 +297,10 @@ int main(int argc, char* const argv[]) {
 
       case 'm':
         if(strcmp(optarg,"cu") == 0){
-          mode = UDP_CLIENT;
+          if(debug) printf("UDP mode\n");
+          //mode = UDP_CLIENT;
         }else if(strcmp(optarg,"ct") == 0){
+          if(debug) printf("TCP mode\n");
           mode = TCP_CLIENT;
         }else if(strcmp(optarg,"s") == 0){
           mode = SERVER_MODE;
