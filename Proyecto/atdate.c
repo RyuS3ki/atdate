@@ -235,7 +235,7 @@ int udp_client(char *host, int port, int debug){
    */
 
   /* Send empty message to server */
-  n = sendto(clientfd, NULL, 0, 0, (struct sockaddr *) &serveraddr, (socklen_t *) sizeof(serveraddr));
+  n = sendto(clientfd, NULL, 0, 0, (struct sockaddr *) &serveraddr, (socklen_t) sizeof(serveraddr));
   if (n < 0) {
     perror("ERROR sending empty packet");
     exit(0);
