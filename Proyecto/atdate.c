@@ -294,7 +294,7 @@ int udp_client(char *host, int port, int debug){
 int main(int argc, char* const argv[]) {
   int opt;
   int debug = 0;
-  char* mode;
+  char* mode = NULL;
   char* host;
 	int port = 37;
   char *str_opt;
