@@ -321,6 +321,7 @@ int main(int argc, char* const argv[]) {
     usage();
   }else{
     printf("Host server is: %s\n", host);
+    printf("Port is: %s\n", port);
   }
 
   if (mode == UDP_CLIENT) {
