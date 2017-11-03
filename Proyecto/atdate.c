@@ -11,6 +11,9 @@
 #include <sys/wait.h>
 #include <signal.h>
 
+#define UDP_CLIENT 0
+#define TCP_CLIENT 1
+#define SERVER_MODE 2
 #define BACKLOG 10	 // Max pending connections in queue
 #define BUFSIZE 32  // Buffer size (TIME payload size)
 #define STIME_PORT 37 // Default port for TIME protocol servers
@@ -43,11 +46,11 @@ void sigchld_handler(int s){
 }
 
 /* TCP Server function */
-int tcp_server(){
+int tcp_server(int debug){
   signal(SIGCHLD, sigchld_handler);
 
   int sockfd, new_fd;  // listen on sock_fd, new connection on new_fd
-	int port;
+	int port = SERV_PORT;
   int clientlen; // byte size of client's address
   struct sockaddr_in serveraddr; // server's addr
   struct sockaddr_in clientaddr; // client addr
@@ -136,7 +139,7 @@ int tcp_server(){
 }
 
 /* TCP Client function */
-int tcp_client(){
+int tcp_client(char *host, int port, int debug){
 
   struct hostent *server;
 	struct sockaddr_in serveraddr;
@@ -198,14 +201,11 @@ int tcp_client(){
 }
 
 /* UDP Client function */
-int udp_client(){
+int udp_client(char *host, int port, int debug){
 
   struct hostent *server;
 	struct sockaddr_in serveraddr;
-	char* host;
-	int port;
   char buf[BUFSIZE];
-  char payload;
   int n;
 
   signal(SIGINT, ctrlc_handler);
@@ -237,8 +237,7 @@ int udp_client(){
   }
 
   /* Send empty message to server */
-  memset(&payload, 0, sizeof(payload));
-  n = sendto(clientfd, &payload, sizeof(payload), 0);
+  n = sendto(clientfd, NULL, 0, 0);
   if (n < 0) {
     perror("ERROR sending empty packet");
     exit(0);
@@ -269,14 +268,52 @@ int udp_client(){
 }
 
 int main(int argc, char const *argv[]) {
+  int opt;
+  int debug = 0;
+  int mode = UDP_CLIENT; // Default mode
+  char* host;
+	int port = STIME_PORT;
 
-  switch(argc){
-    case 3:
-      if(argv[]){
+  /* Parsing command-line arguments */
+  while(opt = getopt(argc, argv, "h:p:m:d") != -1){
+    switch(opt){
+      case 'h':
+        host = optarg;
+        break;
 
-      }else if(argv[]){
+      case 'p':
+        port = optarg;
+        break;
 
-      }
+      case 'm':
+        if(optarg == "cu"){
+          mode = UDP_CLIENT;
+        }else if(optarg == "ct"){
+          mode = TCP_CLIENT;
+        }else if(optarg == "s"){
+          mode = SERVER_MODE;
+        }
+        break;
+
+      case 'd':
+        debug = 1; // Debug set to true
+        break;
+
+      case '?':
+        usage();
+    }
+  }
+  if(mode =! 2 && host == NULL){
+    printf("To execute Client Mode you must specify at least the option '-h'\n");
+    usage();
+  }
+
+  if (mode == UDP_CLIENT) {
+    udp_client(host, port, debug);
+  }else if(mode == TCP_CLIENT){
+    tcp_client(host, port, debug);
+  }else{
+    tcp_server(debug);
   }
 
   return 0;
