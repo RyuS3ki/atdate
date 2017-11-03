@@ -177,8 +177,8 @@ int udp_server(int debug){
   /* setsockopt: lets s rerun the server immediately after we kill it.
    * Eliminates "ERROR on binding: Address already in * use" error.
    */
-  optval = 1;
-  setsockopt(new_fd, SOL_SOCKET, SO_REUSEADDR,(const void *)&optval , sizeof(int));
+  //optval = 1;
+  //setsockopt(new_fd, SOL_SOCKET, SO_REUSEADDR,(const void *)&optval , sizeof(int));
 
 
   /* build the server's Internet address */
@@ -218,7 +218,7 @@ int udp_server(int debug){
         time_send = htonl(own_time + LINUX_TIMEBASE); // Adjusted
         /* Sending time */
         if(debug) printf("Sending...\n");
-        n = sendto(new_fd, &time_send, sizeof(uint32_t), 0, (struct sockaddr *)&clientaddr, clientlen);
+        n = sendto(sockfd, &time_send, sizeof(uint32_t), 0, (struct sockaddr *)&clientaddr, clientlen);
         if(n < 0){
           fprintf(stderr, "ERROR sending\n");
         }else{
@@ -227,7 +227,7 @@ int udp_server(int debug){
       }
       if(debug) printf("Closing connection with client\n");
       close(sockfd); // child doesn't need the listener
-			close(new_fd);
+			//close(new_fd);
 			exit(0);
     }else{
       if(debug) printf("Wrong type of datagram received, discarding...\n");
