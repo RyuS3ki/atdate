@@ -28,8 +28,6 @@
  */
 #define LINUX_TIMEBASE 2208988800 // January 1st, 00.00 am 1970
 
-int mode;
-
 /* Usage function */
 void usage(){
 	fprintf(stderr, "usage: atdate [-h serverhost] [-p port] [-m cu|ct|s] [-d]\n");
@@ -278,7 +276,7 @@ int udp_client(char *host, int port, int debug){
 int main(int argc, char* const argv[]) {
   int opt;
   int debug = 0;
-   // Default mode
+  char* mode; // Default mode
   char* host;
 	int port = STIME_PORT;
   char *str_opt;
@@ -299,16 +297,7 @@ int main(int argc, char* const argv[]) {
         break;
 
       case 'm':
-        str_opt = optarg;
-        if(strcmp(str_opt,"cu") == 0){
-          printf("UDP mode\n");
-          mode = 1;
-        }else if(strcmp(str_opt,"ct") == 0){
-          printf("TCP mode\n");
-          mode = 2;
-        }else if(strcmp(str_opt,"s") == 0){
-          mode = 3;
-        }
+        mode = optarg;
         break;
 
       case 'd':
@@ -320,22 +309,23 @@ int main(int argc, char* const argv[]) {
     }
   }
 
-  if(mode =! 3 && host == NULL){
-    printf("To execute Client Mode you must specify at least the option '-h'\n");
-    usage();
-  }else{
-    printf("Host server is: %s\n", host);
-    printf("Port is: %d\n", port);
-    printf("Mode type is: %d\n", mode);
-  }
-
-  if (mode == UDP_CLIENT) {
+  if((strcmp(mode,"cu") == 0) && host != NULL){
     if(debug) printf("Executing UDP Client\n");
     udp_client(host, port, debug);
-  }else if(mode == TCP_CLIENT){
+  }else if(host == NULL){
+    printf("To execute Client Mode you must specify at least the option '-h'\n");
+    usage();
+  }
+
+  if((strcmp(mode,"ct") == 0) && host != NULL){
     if(debug) printf("Executing TCP Client\n");
     tcp_client(host, port, debug);
-  }else{
+  }else if(host == NULL){
+    printf("To execute Client Mode you must specify at least the option '-h'\n");
+    usage();
+  }
+
+  if(strcmp(mode,"s") == 0){
     if(debug) printf("Executing Server\n");
     tcp_server(debug);
   }
