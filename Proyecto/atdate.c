@@ -207,15 +207,9 @@ int udp_server(int debug){
     clientlen = sizeof(clientaddr);
     if(debug) printf("Listening for new connections...\n");
 
-    if(debug) printf("New child process generated\n");
     uint32_t time_send; // 32 bit long int
     int n;
     time_t own_time;
-
-    if(debug) printf("Getting system time\n");
-    own_time = time(NULL); // Getting the server's time
-    if(debug) printf("Adjusting time to NTP timebase\n");
-    time_send = htonl(own_time + LINUX_TIMEBASE); // Adjusted
 
     /* Receiving empty datagram */
     char received[10];
@@ -225,6 +219,10 @@ int udp_server(int debug){
       exit(0);
     }else if (n == 0){
       if(!fork()){
+        if(debug) printf("Getting system time\n");
+        own_time = time(NULL); // Getting the server's time
+        if(debug) printf("Adjusting time to NTP timebase\n");
+        time_send = htonl(own_time + LINUX_TIMEBASE); // Adjusted
         /* Sending time */
         if(debug) printf("Sending...\n");
         n = sendto(new_fd, &time_send, sizeof(uint32_t), 0, (struct sockaddr *)&clientaddr, clientlen);
