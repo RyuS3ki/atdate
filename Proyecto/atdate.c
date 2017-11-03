@@ -294,7 +294,7 @@ int udp_client(char *host, int port, int debug){
 int main(int argc, char* const argv[]) {
   int opt;
   int debug = 0;
-  char* mode; // Default mode
+  char* mode;
   char* host;
 	int port = 37;
   char *str_opt;
@@ -327,11 +327,7 @@ int main(int argc, char* const argv[]) {
     }
   }
 
-  if(mode == NULL){ // Setting default mode
-    mode = "cu";
-  }
-
-  if((strcmp(mode,"cu") == 0) && host != NULL){
+  if(((mode == NULL) || (strcmp(mode,"cu") == 0)) && host != NULL){
     if(debug) printf("Executing UDP Client\n");
     udp_client(host, port, debug);
   }else if(host == NULL){
