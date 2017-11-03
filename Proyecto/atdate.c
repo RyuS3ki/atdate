@@ -300,12 +300,12 @@ int main(int argc, char* const argv[]) {
         str_opt = optarg;
         if(strcmp(str_opt,"cu") == 0){
           printf("UDP mode\n");
-          mode = UDP_CLIENT;
+          mode = 1;
         }else if(strcmp(str_opt,"ct") == 0){
           printf("TCP mode\n");
-          mode = TCP_CLIENT;
+          mode = 2;
         }else if(strcmp(str_opt,"s") == 0){
-          mode = SERVER_MODE;
+          mode = 3;
         }
         break;
 
@@ -318,7 +318,7 @@ int main(int argc, char* const argv[]) {
     }
   }
 
-  if(mode =! 2 && host == NULL){
+  if(mode =! 3 && host == NULL){
     printf("To execute Client Mode you must specify at least the option '-h'\n");
     usage();
   }else{
