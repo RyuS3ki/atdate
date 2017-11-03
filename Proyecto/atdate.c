@@ -276,8 +276,7 @@ int udp_client(char *host, int port, int debug){
 int main(int argc, char* const argv[]) {
   int opt;
   int debug = 0;
-  int mode;
-  //int mode = UDP_CLIENT; // Default mode
+  int mode = UDP_CLIENT; // Default mode
   char* host;
 	int port = STIME_PORT;
   char *str_opt;
@@ -300,7 +299,7 @@ int main(int argc, char* const argv[]) {
         str_opt = optarg;
         if(strcmp(str_opt,"cu") == 0){
           if(debug) printf("UDP mode\n");
-          //mode = UDP_CLIENT;
+          mode = UDP_CLIENT;
         }else if(strcmp(str_opt,"ct") == 0){
           if(debug) printf("TCP mode\n");
           mode = TCP_CLIENT;
@@ -323,7 +322,7 @@ int main(int argc, char* const argv[]) {
     usage();
   }else{
     printf("Host server is: %s\n", host);
-    printf("Port is: %s\n", port);
+    printf("Port is: %d\n", port);
   }
 
   if (mode == UDP_CLIENT) {
