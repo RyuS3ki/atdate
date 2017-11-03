@@ -10,6 +10,7 @@
 #include <errno.h>
 #include <sys/wait.h>
 #include <signal.h>
+#include <time.h>
 
 #define UDP_CLIENT 0
 #define TCP_CLIENT 1
