@@ -12,9 +12,6 @@
 #include <signal.h>
 #include <time.h>
 
-#define UDP_CLIENT 1
-#define TCP_CLIENT 2
-#define SERVER_MODE 3
 #define BACKLOG 10	 // Max pending connections in queue
 #define BUFSIZE 32  // Buffer size (TIME payload size)
 #define STIME_PORT 37 // Default port for TIME protocol servers
@@ -184,23 +181,25 @@ int tcp_client(char *host, int port, int debug){
 
   if(debug) printf("Waiting for server's answer\n");
 	/* read answer from the server */
-  n = recv(clientfd, &buf, BUFSIZE, 0);
-  if (n < 0) {
-    perror("ERROR receiving");
-    exit(0);
-  }else{
-    if(debug) printf("Data received\n");
-    time_t t_rcvd = ntohl(buf) - LINUX_TIMEBASE; // Adjust to linux
-    if(debug) printf("Adjusting time to linux timebase\n");
-    struct tm *final_date; // Struct tm with rcvd time
-    //final_date = localtime(&t_rcvd);
-    if(debug) printf("Formatting date\n");
-    char final_date_s[80]; // Buffer to store formatted string
-    strftime(final_date_s, 80, "%c", localtime(&t_rcvd));
+  while(1){
+    n = recv(clientfd, &buf, BUFSIZE, 0);
+    if (n < 0) {
+      perror("ERROR receiving");
+      exit(0);
+    }else{
+      if(debug) printf("Data received\n");
+      time_t t_rcvd = ntohl(buf) - LINUX_TIMEBASE; // Adjust to linux
+      if(debug) printf("Adjusting time to linux timebase\n");
+      struct tm *final_date; // Struct tm with rcvd time
+      //final_date = localtime(&t_rcvd);
+      if(debug) printf("Formatting date\n");
+      char final_date_s[80]; // Buffer to store formatted string
+      strftime(final_date_s, 80, "%c", localtime(&t_rcvd));
 
-    /* print the server's reply */
-    if(debug) printf("Printing date\n");
-    printf("%s\n", final_date_s);
+      /* print the server's reply */
+      if(debug) printf("Printing date\n");
+      printf("%s\n", final_date_s);
+    }
   }
 
   /* Close socket: ended connection */
