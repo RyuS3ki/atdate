@@ -293,6 +293,7 @@ int main(int argc, char* const argv[]) {
 
       case 'p':
         port = atoi(optarg); // Convert input(ASCII) to int
+        if(debug) printf("Port selected is: %d\n", port);
         break;
 
       case 'm':
