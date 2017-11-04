@@ -192,6 +192,7 @@ int udp_server(int debug){
 
   /* wait for a connection request */
 	while(1) {  // main loop
+		memset(&clientaddr, '0', sizeof(clientaddr));
     clientlen = sizeof(clientaddr);
     if(debug) printf("Listening for new connections...\n");
 
