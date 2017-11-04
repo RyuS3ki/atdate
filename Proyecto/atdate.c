@@ -191,7 +191,7 @@ int udp_server(int debug){
 	}
 
   /* wait for a connection request */
-	while(1) {  // main accept() loop
+	while(1) {  // main loop
     clientlen = sizeof(clientaddr);
     if(debug) printf("Listening for new connections...\n");
 
@@ -219,14 +219,13 @@ int udp_server(int debug){
         }else{
           printf("Date & time correctly sent\n");
         }
+				if(debug) printf("Closing connection with client\n");
+	      close(sockfd);
+				exit(0);
       }
-      if(debug) printf("Closing connection with client\n");
-      close(sockfd); // child doesn't need the listener
-			exit(0);
     }else{
       if(debug) printf("Wrong type of datagram received, discarding...\n");
     }
-
     // Closed connection
     if(debug) printf("Closing server socket\n");
     close(sockfd);
