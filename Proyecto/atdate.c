@@ -25,6 +25,10 @@
  */
 #define LINUX_TIMEBASE 2208988800 // January 1st, 00.00 am 1970
 
+int sockfd, new_fd;
+int is_server_udp = 0;
+int is_server_tcp = 0;
+
 /* Usage function */
 void usage(){
 	fprintf(stderr, "usage: atdate [-h serverhost] [-p port] [-m cu|ct|s|su] [-d]\n");
@@ -33,6 +37,13 @@ void usage(){
 
 /* Signal handler for Ctrl-C */
 void ctrlc_handler(int sig){
+	if(is_server_tcp == 1){
+		close(sockfd);
+		close(new_fd);
+	}
+	if(is_server_udp == 1){
+		close(sockfd);
+	}
   printf("\n\nCtrl-C captured, exiting...\n");
   printf("See you soon!\n");
   exit(0);
@@ -45,6 +56,9 @@ void sigchld_handler(int s){
 
 /* TCP Server function */
 int tcp_server(int debug){
+
+	is_server_tcp = 1;
+
   signal(SIGCHLD, sigchld_handler);
 	signal(SIGINT, ctrlc_handler);
 
@@ -147,17 +161,19 @@ int tcp_server(int debug){
 			close(new_fd);
 			exit(0);
 		}
-		close(new_fd);  // parent doesn't need this
+		//close(new_fd);  // parent doesn't need this
 	}
 	return 0;
 }
 
 /* UDP Server function */
 int udp_server(int debug){
+
+	is_server_udp = 1;
+
   signal(SIGCHLD, sigchld_handler);
 	signal(SIGINT, ctrlc_handler);
 
-  int sockfd, new_fd;  // listen on sockfd
 	int port = SERV_PORT; // Port = 6649
   socklen_t clientlen; // byte size of client's address
   struct sockaddr_in serveraddr; // server's addr
@@ -192,7 +208,6 @@ int udp_server(int debug){
 
   /* wait for a connection request */
 	while(1) {  // main loop
-		memset(&clientaddr, '0', sizeof(clientaddr));
     clientlen = sizeof(clientaddr);
     if(debug) printf("Listening for new connections...\n");
 
@@ -207,7 +222,7 @@ int udp_server(int debug){
       perror("ERROR receiving");
       exit(0);
     }else if (n == 0){
-      //if(!fork()){
+      if(!fork()){
         if(debug) printf("Getting system time\n");
         own_time = time(NULL); // Getting the server's time
         if(debug) printf("Adjusting time to NTP timebase\n");
@@ -221,14 +236,15 @@ int udp_server(int debug){
           printf("Date & time correctly sent\n");
         }
 				if(debug) printf("Closing connection with client\n");
-	      //close(sockfd);
-      //}
+	      close(sockfd);
+				exit(0);
+      }
     }else{
       if(debug) printf("Wrong type of datagram received, discarding...\n");
     }
     // Closed connection
     if(debug) printf("Closing server socket\n");
-    close(sockfd);
+    //close(sockfd);
 	}
 	return 0;
 }
