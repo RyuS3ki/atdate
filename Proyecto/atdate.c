@@ -33,7 +33,7 @@ void usage(){
 
 /* Signal handler for Ctrl-C */
 void ctrlc_handler(int sig){
-  printf("\nCtrl-C captured, exiting...\n");
+  printf("\n\nCtrl-C captured, exiting...\n");
   printf("See you soon!\n");
   exit(0);
 }
