@@ -26,8 +26,7 @@
 #define LINUX_TIMEBASE 2208988800 // January 1st, 00.00 am 1970
 
 int sockfd, new_fd;
-int is_server_udp = 0;
-int is_server_tcp = 0;
+int is_server = 0;
 
 /* Usage function */
 void usage(){
@@ -37,11 +36,7 @@ void usage(){
 
 /* Signal handler for Ctrl-C */
 void ctrlc_handler(int sig){
-	if(is_server_tcp == 1){
-		close(sockfd);
-		close(new_fd);
-	}
-	if(is_server_udp == 1){
+	if(is_server == 1){
 		close(sockfd);
 	}
   printf("\n\nCtrl-C captured, exiting...\n");
@@ -57,7 +52,7 @@ void sigchld_handler(int s){
 /* TCP Server function */
 int tcp_server(int debug){
 
-	is_server_tcp = 1;
+	is_server = 1;
 
   signal(SIGCHLD, sigchld_handler);
 	signal(SIGINT, ctrlc_handler);
@@ -161,7 +156,7 @@ int tcp_server(int debug){
 			close(new_fd);
 			exit(0);
 		}
-		//close(new_fd);  // parent doesn't need this
+		close(new_fd);  // parent doesn't need this
 	}
 	return 0;
 }
@@ -169,7 +164,7 @@ int tcp_server(int debug){
 /* UDP Server function */
 int udp_server(int debug){
 
-	is_server_udp = 1;
+	is_server = 1;
 
   signal(SIGCHLD, sigchld_handler);
 	signal(SIGINT, ctrlc_handler);
@@ -242,9 +237,6 @@ int udp_server(int debug){
     }else{
       if(debug) printf("Wrong type of datagram received, discarding...\n");
     }
-    // Closed connection
-    if(debug) printf("Closing server socket\n");
-    //close(sockfd);
 	}
 	return 0;
 }
