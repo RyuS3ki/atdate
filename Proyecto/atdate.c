@@ -20,8 +20,6 @@
  * 70 years/4 = 17,5 -> 17 leap years in 70 years
  * 70-17 = ((53*365)+(17*366))*24*60*60 seconds
  * Total adjust time = 2208988800
- * We need to substract this quantity to the host Time
- * so that it is adjusted to the RFC
  */
 #define LINUX_TIMEBASE 2208988800 // January 1st, 00.00 am 1970
 
@@ -293,6 +291,9 @@ int tcp_client(char *host, int port, int debug){
       exit(0);
     }else{
       if(debug) printf("Data received\n");
+			/* Format of date seen in:
+			 * https://www.tutorialspoint.com/c_standard_library/c_function_strftime.htm
+			 */
       time_t t_rcvd = ntohl(buf) - LINUX_TIMEBASE; // Adjust to linux
       if(debug) printf("Adjusting time to linux timebase\n");
       struct tm *final_date; // Struct tm with rcvd time
@@ -376,6 +377,9 @@ int udp_client(char *host, int port, int debug){
     exit(0);
   }else{
     if(debug) printf("Data received\n");
+		/* Format of date seen in:
+		 * https://www.tutorialspoint.com/c_standard_library/c_function_strftime.htm
+		 */
     time_t t_rcvd = ntohl(buf) - LINUX_TIMEBASE; // Adjust to linux
     if(debug) printf("Adjusting time to linux timebase\n");
     struct tm *final_date; // Struct tm with rcvd time
