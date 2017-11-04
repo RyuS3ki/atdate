@@ -206,7 +206,7 @@ int udp_server(int debug){
       perror("ERROR receiving");
       exit(0);
     }else if (n == 0){
-      if(!fork()){
+      //if(!fork()){
         if(debug) printf("Getting system time\n");
         own_time = time(NULL); // Getting the server's time
         if(debug) printf("Adjusting time to NTP timebase\n");
@@ -220,9 +220,8 @@ int udp_server(int debug){
           printf("Date & time correctly sent\n");
         }
 				if(debug) printf("Closing connection with client\n");
-	      close(sockfd);
-				exit(0);
-      }
+	      //close(sockfd);
+      //}
     }else{
       if(debug) printf("Wrong type of datagram received, discarding...\n");
     }
