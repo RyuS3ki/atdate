@@ -1,7 +1,9 @@
 # Proyecto atdate (Servidor y cliente NTP)
 ## Datos autora
 **Nombre:** Rebeca Jiménez Guillén
+
 **Correo electrónico:** rebecajg@protonmail.com
+
 **Grado:** Grado en Ingeniería Telemática
 
 ## Descripción
