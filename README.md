@@ -7,7 +7,8 @@
 **Grado:** Grado en Ingeniería Telemática
 
 ## Descripción
-  El directorio del proyecto contiene: atdate.c, Makefile y README.md
+  El directorio del proyecto contiene: LICENSE.md, atdate.c, Makefile y README.md
+  El proyecto se encuentra bajo licencia GPLv3 (consultar LICENSE.md para más información)
 
 ## Funcionalidad atdate
 ### Especificaciones necesarias
