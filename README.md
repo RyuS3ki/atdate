@@ -24,7 +24,9 @@
 
 # Compilación
   **make**
+    
     -Se ejecuta un "rm" que limpia el directorio de posibles ejecutables previos
+    
     -Se ejecuta la compilación del código fuente
 
 # Ejecución
